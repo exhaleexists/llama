@@ -1,0 +1,66 @@
+import openai
+
+# Set up your OpenAI API key
+openai.api_key = "API_SECRET_KEY"
+
+# Define an initial system message
+system_message = "I am your helpful assistant."
+
+# Generate a chat-based response using GPT-3
+def generate_response(user_input):
+    # Define a list of messages including user input
+    messages = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": user_input}
+    ]
+
+    # Call the Chat API to get the assistant's response
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+
+    # Get the assistant's reply
+    reply = response.choices[0].message["content"]
+
+    return reply
+
+print(system_message)
+
+n = int(input("Enter the starting population of llamas: "))
+year = 1
+
+while True:
+    print(f"\nYear {year}:")
+    growth = n // 3
+    deaths = n // 4
+
+    print(f"Llamas born: {growth}")
+    print(f"Llamas died: {deaths}")
+
+    n = n + growth - deaths
+    print(f"Population at the end of the year: {n} llamas")
+
+    user_input = input("\nEnter 'continue' to simulate the next year, 'exit' to end the conversation, or specify a year (e.g., 'Year 10'): ")
+
+    if user_input.lower() == "exit":
+        break
+    elif user_input.lower() == "continue":
+        year += 1
+    else:
+        try:
+            input_year = int(user_input.lower().replace("year", "").strip())
+            if input_year > year:
+                for i in range(year + 1, input_year + 1):
+                    growth = n // 3
+                    deaths = n // 4
+                    n = n + growth - deaths
+                    year += 1
+                    if year == input_year:
+                        print(f"\nYear {year}:")
+                        print(f"Population: {n} llamas")
+                        break
+            else:
+                print("Please provide a year greater than the current year.")
+        except ValueError:
+            print("Invalid input. Please try again.")
